@@ -1,6 +1,6 @@
 {
-    "name": "expense_tracker_android",
-    "short_name": "expense_tracker_android",
+    "name": "expense_diary",
+    "short_name": "expense_diary",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

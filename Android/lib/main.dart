@@ -23,7 +23,7 @@ class ExpenseTrackerApp extends StatelessWidget {
     final provider = Provider.of<FinanceProvider>(context);
 
     return MaterialApp(
-      title: 'Expense Tracker',
+      title: 'Expense Diary',
       debugShowCheckedModeBanner: false,
       themeMode: provider.appearance,
       darkTheme: ThemeData(
