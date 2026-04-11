@@ -4,10 +4,9 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../models/finance_models.dart';
 import '../providers/finance_provider.dart';
-import '../widgets/app_backdrop.dart';
 import '../widgets/atm_card_view.dart';
 import '../widgets/transaction_row.dart';
-import '../widgets/home_components.dart' hide GlassCard;
+import '../widgets/home_components.dart';
 import '../widgets/ui_elements.dart';
 import 'profile_screen.dart';
 import 'transactions_screen.dart';
@@ -29,105 +28,86 @@ class HomeScreen extends StatelessWidget {
     final snapshot = provider.monthlySnapshot;
     final recent = provider.recentTransactions;
     final hasTransactions = provider.hasTransactions;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        leadingWidth: 150,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: _MonthPicker(
-            selectedMonth: provider.selectedMonth,
-            onChanged: provider.setSelectedMonth,
-          ),
+        title: _MonthPicker(
+          selectedMonth: provider.selectedMonth,
+          onChanged: provider.setSelectedMonth,
         ),
+        centerTitle: false,
         actions: [
           IconButton(
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const ProfileScreen()),
             ),
-            icon: const Icon(LucideIcons.userCircle, size: 26, color: Colors.white),
+            icon: const Icon(LucideIcons.userCircle),
           ),
           const SizedBox(width: 8),
         ],
       ),
-      body: Stack(
+      body: ListView(
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
         children: [
-          const AppBackdrop(),
-          SafeArea(
-            child: ListView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
-              children: [
-                _buildHeader(provider),
-                const SizedBox(height: 24),
-                ATMCardView(snapshot: snapshot),
-                const SizedBox(height: 28),
-                if (hasTransactions) ...[
-                  QuickStatsRow(snapshot: snapshot),
-                  const SizedBox(height: 32),
-                  SpendingChartCard(
-                    items: provider.monthlyTotalsByCategory(TransactionKind.expense),
-                  ),
-                  const SizedBox(height: 12),
-                  _buildSectionHeader(
-                    context,
-                    'Recent activity',
-                    onSeeAll: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const TransactionsScreen()),
-                    ),
-                  ),
-                  if (recent.isEmpty)
-                    const _EmptyActivityList()
-                  else
-                    ...recent.take(3).map((item) => TransactionRow(item: item)),
-                ] else
-                    _FirstRunCard(onAdd: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const AddTransactionScreen(kind: 'expense')),
-                    )),
-              ],
+          _buildHeader(context, provider),
+          const SizedBox(height: 24),
+          ATMCardView(snapshot: snapshot),
+          const SizedBox(height: 28),
+          if (hasTransactions) ...[
+            QuickStatsRow(snapshot: snapshot),
+            const SizedBox(height: 32),
+            SpendingChartCard(
+              items: provider.monthlyTotalsByCategory(TransactionKind.expense),
             ),
-          ),
+            const SizedBox(height: 12),
+            _buildSectionHeader(
+              context,
+              'Recent activity',
+              onSeeAll: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const TransactionsScreen()),
+              ),
+            ),
+            if (recent.isEmpty)
+              const _EmptyActivityList()
+            else
+              ...recent.take(3).map((item) => TransactionRow(item: item)),
+          ] else
+            _FirstRunCard(onAdd: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AddTransactionScreen(kind: 'expense')),
+            )),
         ],
       ),
     );
   }
 
-  Widget _buildHeader(FinanceProvider provider) {
+  Widget _buildHeader(BuildContext context, FinanceProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           '${_getGreeting()},',
-          style: const TextStyle(
-            fontSize: 34,
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
             height: 1.1,
           ),
         ),
         Text(
           provider.userDisplayName,
-          style: const TextStyle(
-            fontSize: 34,
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
             height: 1.1,
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         Text(
           'Your money is organised for ${DateFormat('MMMM').format(provider.selectedMonth)}',
-          style: TextStyle(
-            color: Colors.white.withOpacity(0.55),
-            fontSize: 15,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
       ],
@@ -142,20 +122,12 @@ class HomeScreen extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
-          GestureDetector(
-            onTap: onSeeAll,
-            child: const Row(
-              children: [
-                Text(
-                  'See all',
-                  style: TextStyle(color: Color(0xFF4F8EF7), fontWeight: FontWeight.w600, fontSize: 13),
-                ),
-                SizedBox(width: 4),
-                Icon(LucideIcons.chevronRight, size: 14, color: Color(0xFF4F8EF7)),
-              ],
-            ),
+          TextButton.icon(
+            onPressed: onSeeAll,
+            icon: const Icon(LucideIcons.chevronRight, size: 14),
+            label: const Text('See all', style: TextStyle(fontSize: 13)),
           ),
         ],
       ),
@@ -171,60 +143,51 @@ class _MonthPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-         showModalBottomSheet(
-           context: context,
-           backgroundColor: const Color(0xFF16213E),
-           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-           builder: (context) {
-             return Padding(
-               padding: const EdgeInsets.symmetric(vertical: 20),
-               child: Column(
-                 mainAxisSize: MainAxisSize.min,
-                 children: [
-                   const Text('Select Month', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-                   const SizedBox(height: 14),
-                   ...List.generate(12, (index) {
-                     final month = DateTime(DateTime.now().year, index + 1);
-                     final isSelected = month.month == selectedMonth.month;
-                     return ListTile(
-                       title: Text(
-                         DateFormat('MMMM').format(month),
-                         style: TextStyle(color: isSelected ? const Color(0xFF4F8EF7) : Colors.white),
-                       ),
-                       trailing: isSelected ? const Icon(LucideIcons.check, color: Color(0xFF4F8EF7), size: 18) : null,
-                       onTap: () {
-                         onChanged(month);
-                         Navigator.pop(context);
-                       },
-                     );
-                   }),
-                 ],
-               ),
-             );
-           },
-         );
+    return ActionChip(
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Select Month', style: Theme.of(context).textTheme.titleLarge),
+                  const SizedBox(height: 14),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: 12,
+                      itemBuilder: (context, index) {
+                        final month = DateTime(DateTime.now().year, index + 1);
+                        final isSelected = month.month == selectedMonth.month;
+                        return ListTile(
+                          title: Text(DateFormat('MMMM').format(month)),
+                          selected: isSelected,
+                          trailing: isSelected ? const Icon(LucideIcons.check) : null,
+                          onTap: () {
+                            onChanged(month);
+                            Navigator.pop(context);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
       },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.12)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              DateFormat('MMMM').format(selectedMonth),
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-            ),
-            const SizedBox(width: 4),
-            const Icon(LucideIcons.chevronDown, size: 14, color: Colors.white54),
-          ],
-        ),
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(DateFormat('MMMM').format(selectedMonth)),
+          const SizedBox(width: 4),
+          const Icon(LucideIcons.chevronDown, size: 14),
+        ],
       ),
+      avatar: const Icon(LucideIcons.calendar, size: 16),
     );
   }
 }
@@ -234,20 +197,20 @@ class _EmptyActivityList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
+    return MaterialCard(
       child: Column(
         children: [
-          Icon(LucideIcons.inbox, size: 32, color: Colors.white.withOpacity(0.2)),
+          Icon(LucideIcons.inbox, size: 32, color: Theme.of(context).colorScheme.outline),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'No transactions yet',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           Text(
-            'Start by adding your first income or expense and the monthly story will build itself.',
+            'Start by adding your first entry.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
       ),
@@ -261,21 +224,24 @@ class _FirstRunCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
-      color: const Color(0xFF4F8EF7).withOpacity(0.12),
+    return MaterialCard(
+      color: Theme.of(context).colorScheme.primaryContainer,
       child: Column(
         children: [
-          const Icon(LucideIcons.sparkles, size: 40, color: Color(0xFF4F8EF7)),
+          Icon(LucideIcons.sparkles, size: 40, color: Theme.of(context).colorScheme.primary),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Ready to track?',
-            style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Add your first transaction to unlock deep insights and beautiful visualisations.',
+            'Add your first transaction to unlock deep insights.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white.withOpacity(0.65), fontSize: 14),
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.8)),
           ),
           const SizedBox(height: 24),
           PrimaryButton(title: 'Add Transaction', action: onAdd),

@@ -137,7 +137,7 @@ class _ATMCardViewState extends State<ATMCardView> with SingleTickerProviderStat
                   ),
                   const SizedBox(width: 8),
                   const Text(
-                    'Expense\nDaily',
+                    'Expense\nDairy',
                     style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.bold,

@@ -35,7 +35,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingIntroData> _introPages = [
     OnboardingIntroData(
       image: 'assets/images/onboarding_home.png',
-      gradientColors: [const Color(0xFF4F8EF7), const Color(0xFF2D5BA3)],
+      gradientColors: [const Color(0xFF09637E), const Color(0xFF2D5BA3)],
       title: 'Know Where Your Money Goes',
       subtitle: 'Track every rupee with smart categories. See exactly what you spend on food, travel, bills, and more — all in one clean dashboard.',
     ),
@@ -126,7 +126,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       height: 8,
       width: isSelected ? 24 : 8,
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF4F8EF7) : Colors.white.withOpacity(0.35),
+        color: isSelected ? const Color(0xFF09637E) : Colors.white.withOpacity(0.35),
         borderRadius: BorderRadius.circular(4),
       ),
     );
@@ -162,13 +162,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Text(
                 data.title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               const SizedBox(height: 14),
               Text(
                 data.subtitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.6), height: 1.5),
+                style: const TextStyle(fontSize: 16, color: Colors.grey, height: 1.5),
               ),
             ],
           ),
@@ -191,7 +191,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   margin: const EdgeInsets.only(right: 6),
                   height: 4,
                   decoration: BoxDecoration(
-                    color: _getStepIndex() >= i ? const Color(0xFF4F8EF7) : Colors.white.withOpacity(0.25),
+                    color: _getStepIndex() >= i ? const Color(0xFF09637E) : Colors.white.withOpacity(0.25),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -233,7 +233,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         return _SetupStepWrapper(
           key: const ValueKey('name'),
           icon: LucideIcons.user,
-          iconColors: const [Color(0xFF4F8EF7), Color(0xFF2D5BA3)],
+          iconColors: const [Color(0xFF09637E), Color(0xFF2D5BA3)],
           title: "What's your name?",
           subtitle: "Personalise your experience — your greeting and profile will use this.",
           fields: Column(
@@ -369,9 +369,9 @@ class _SetupStepWrapper extends StatelessWidget {
                   child: Icon(icon, color: Colors.white, size: 32),
                 ),
                 const SizedBox(height: 28),
-                Text(title, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+                Text(title, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black)),
                 const SizedBox(height: 8),
-                Text(subtitle, style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.6), height: 1.5)),
+                Text(subtitle, style: const TextStyle(fontSize: 16, color: Colors.grey, height: 1.5)),
                 const SizedBox(height: 28),
                 fields,
               ],
@@ -457,21 +457,21 @@ class _CardSetupStepState extends State<_CardSetupStep> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
                     gradient: const LinearGradient(colors: [Color(0xFF1A1A2E), Color(0xFF0F3460)]),
-                    boxShadow: [BoxShadow(color: const Color(0xFF4F8EF7).withOpacity(0.45), blurRadius: 18, offset: const Offset(0, 8))],
+                    boxShadow: [BoxShadow(color: const Color(0xFF09637E).withOpacity(0.45), blurRadius: 18, offset: const Offset(0, 8))],
                   ),
                   child: const Icon(LucideIcons.creditCard, color: Colors.white, size: 30),
                 ),
                 const SizedBox(height: 20),
-                const Text('Your ExpenseTracker Card', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+                const Text('Your ExpenseTracker Card', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black)),
                 const SizedBox(height: 10),
-                Text('A virtual card that lives inside the app — representing your financial identity here, not in any bank.', 
-                     style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.6), height: 1.5)),
+                const Text('A virtual card that lives inside the app — representing your financial identity here, not in any bank.', 
+                     style: TextStyle(fontSize: 16, color: Colors.grey, height: 1.5)),
                 const SizedBox(height: 28),
                 
                 ATMCardView(snapshot: provider.monthlySnapshot),
                 
                 const SizedBox(height: 28),
-                _buildBullet(LucideIcons.userCheck, const Color(0xFF4F8EF7), 'Your financial identity', 'Your name, card number, and expiry date are generated uniquely for your account.'),
+                _buildBullet(LucideIcons.userCheck, const Color(0xFF09637E), 'Your financial identity', 'Your name, card number, and expiry date are generated uniquely for your account.'),
                 const SizedBox(height: 14),
                 _buildBullet(LucideIcons.barChart, const Color(0xFF2EC4B6), 'Live balance on the back', 'Flip the card anytime to see your current month\'s available balance, income, and expenses.'),
                 const SizedBox(height: 14),
@@ -508,9 +508,9 @@ class _CardSetupStepState extends State<_CardSetupStep> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+              Text(title, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
               const SizedBox(height: 4),
-              Text(body, style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 13, height: 1.4)),
+              Text(body, style: const TextStyle(color: Colors.grey, fontSize: 13, height: 1.4)),
             ],
           ),
         ),

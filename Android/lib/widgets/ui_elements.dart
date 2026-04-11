@@ -1,6 +1,50 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 
+class AppColors {
+  static const Color accent = Color(0xFF09637E);
+  // Using more standard Material 3 colors
+  static Color getSurface(BuildContext context) => Theme.of(context).colorScheme.surface;
+  static Color getOnSurface(BuildContext context) => Theme.of(context).colorScheme.onSurface;
+}
+
+class MaterialCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets? padding;
+  final double cornerRadius;
+  final Color? color;
+  final double? elevation;
+
+  const MaterialCard({
+    super.key,
+    required this.child,
+    this.padding,
+    this.cornerRadius = 16, // Material 3 standard
+    this.color,
+    this.elevation = 0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: elevation,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(cornerRadius),
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outlineVariant,
+          width: 1,
+        ),
+      ),
+      color: color ?? Theme.of(context).colorScheme.surfaceContainerLow,
+      clipBehavior: Clip.antiAlias,
+      child: Padding(
+        padding: padding ?? const EdgeInsets.all(16),
+        child: child,
+      ),
+    );
+  }
+}
+
+// Keeping GlassCard for compatibility during migration, but it now looks standard
 class GlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets? padding;
@@ -11,41 +55,17 @@ class GlassCard extends StatelessWidget {
     super.key,
     required this.child,
     this.padding,
-    this.cornerRadius = 28,
+    this.cornerRadius = 16,
     this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(cornerRadius),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.12),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(cornerRadius),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: Container(
-            padding: padding ?? const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: color ?? Colors.white.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(cornerRadius),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.12),
-                width: 1,
-              ),
-            ),
-            child: child,
-          ),
-        ),
-      ),
+    return MaterialCard(
+      padding: padding,
+      cornerRadius: cornerRadius,
+      color: color,
+      child: child,
     );
   }
 }
@@ -64,30 +84,19 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: isLoading ? null : action,
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        decoration: BoxDecoration(
-          color: const Color(0xFF4F8EF7),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF4F8EF7).withOpacity(0.4),
-              blurRadius: 16,
-              offset: const Offset(0, 8),
-            ),
-          ],
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: FilledButton(
+        onPressed: isLoading ? null : action,
+        style: FilledButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
         ),
-        child: Center(
-          child: isLoading 
-            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-            : Text(
-                title,
-                style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
-              ),
-        ),
+        child: isLoading 
+          ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+          : Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       ),
     );
   }

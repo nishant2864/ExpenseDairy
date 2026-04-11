@@ -5,9 +5,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'dart:math' as math;
 import '../models/finance_models.dart';
 import '../providers/finance_provider.dart';
-import '../widgets/app_backdrop.dart';
 import '../widgets/ui_elements.dart';
-import '../widgets/home_components.dart' hide GlassCard;
+import '../widgets/home_components.dart';
 
 class InsightsScreen extends StatefulWidget {
   const InsightsScreen({super.key});
@@ -23,43 +22,32 @@ class _InsightsScreenState extends State<InsightsScreen> {
     final hasTransactions = provider.transactions.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text('Insights', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24)),
-        centerTitle: false,
+        title: const Text('Insights'),
       ),
-      body: Stack(
+      body: hasTransactions ? ListView(
+        padding: const EdgeInsets.all(20),
         children: [
-          const AppBackdrop(),
-          SafeArea(
-            child: hasTransactions ? ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                SummaryRingCard(
-                  income: provider.monthlySnapshot.income,
-                  expenses: provider.monthlySnapshot.expenses,
-                  formatCurrency: provider.formatCurrency,
-                ),
-                const SizedBox(height: 20),
-                CategoryBreakdownCard(
-                  title: 'Expense categories',
-                  items: provider.monthlyTotalsByCategory(TransactionKind.expense),
-                  formatCurrency: provider.formatCurrency,
-                ),
-                const SizedBox(height: 20),
-                CategoryBreakdownCard(
-                  title: 'Income sources',
-                  items: provider.monthlyTotalsByCategory(TransactionKind.income),
-                  formatCurrency: provider.formatCurrency,
-                ),
-                const SizedBox(height: 40),
-              ],
-            ) : _buildEmptyState(),
+          SummaryRingCard(
+            income: provider.monthlySnapshot.income,
+            expenses: provider.monthlySnapshot.expenses,
+            formatCurrency: provider.formatCurrency,
           ),
+          const SizedBox(height: 20),
+          CategoryBreakdownCard(
+            title: 'Expense categories',
+            items: provider.monthlyTotalsByCategory(TransactionKind.expense),
+            formatCurrency: provider.formatCurrency,
+          ),
+          const SizedBox(height: 20),
+          CategoryBreakdownCard(
+            title: 'Income sources',
+            items: provider.monthlyTotalsByCategory(TransactionKind.income),
+            formatCurrency: provider.formatCurrency,
+          ),
+          const SizedBox(height: 40),
         ],
-      ),
+      ) : _buildEmptyState(),
     );
   }
 
@@ -67,22 +55,22 @@ class _InsightsScreenState extends State<InsightsScreen> {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
-        child: GlassCard(
+        child: MaterialCard(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(LucideIcons.pieChart, color: Colors.white.withOpacity(0.3), size: 64),
+              Icon(LucideIcons.pieChart, color: Theme.of(context).colorScheme.outline, size: 64),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'Insights appear after your first entries',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Text(
                 'Add income and expenses first. Then this tab will animate your monthly balance and category breakdown.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 14, height: 1.5),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),
@@ -110,11 +98,11 @@ class SummaryRingCard extends StatelessWidget {
     final incomeRatio = total > 0 ? income / total : 0.0;
     final expenseRatio = total > 0 ? expenses / total : 0.0;
 
-    return GlassCard(
+    return MaterialCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Monthly Balance', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          Text('Monthly Balance', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 30),
           Row(
             children: [
@@ -181,6 +169,7 @@ class _RingStatRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         Container(width: 12, height: 12, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
@@ -189,12 +178,12 @@ class _RingStatRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(color: Colors.white.withOpacity(0.55), fontSize: 12)),
-              Text(value, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colorScheme.onSurfaceVariant)),
+              Text(value, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
             ],
           ),
         ),
-        Text('$percentage%', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 12, fontWeight: FontWeight.bold)),
+        Text('$percentage%', style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colorScheme.outline)),
       ],
     );
   }
@@ -217,12 +206,13 @@ class CategoryBreakdownCard extends StatelessWidget {
     if (items.isEmpty) return const SizedBox.shrink();
 
     final maxTotal = items.fold<double>(0, (prev, element) => math.max(prev, (element['total'] as double)));
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return GlassCard(
+    return MaterialCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 20),
           ...items.asMap().entries.map((entry) {
             final index = entry.key;
@@ -245,8 +235,8 @@ class CategoryBreakdownCard extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(item['category'], style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
-                                Text(formatCurrency(total), style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 14)),
+                                Text(item['category'], style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+                                Text(formatCurrency(total), style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
                               ],
                             ),
                             const SizedBox(height: 8),
@@ -254,7 +244,7 @@ class CategoryBreakdownCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                               child: LinearProgressIndicator(
                                 value: ratio,
-                                backgroundColor: Colors.white.withOpacity(0.05),
+                                backgroundColor: colorScheme.surfaceContainerHighest,
                                 valueColor: AlwaysStoppedAnimation((item['colors'] as List<Color>).first),
                                 minHeight: 6,
                               ),
@@ -266,7 +256,7 @@ class CategoryBreakdownCard extends StatelessWidget {
                   ),
                 ),
                 if (index < items.length - 1)
-                  Divider(color: Colors.white.withOpacity(0.1), indent: 50),
+                  Divider(color: colorScheme.outlineVariant, indent: 50),
               ],
             );
           }),

@@ -30,7 +30,7 @@ class ProfileScreen extends StatelessWidget {
               context,
               MaterialPageRoute(builder: (_) => const EditProfileScreen()),
             ).then((_) => provider.notifyListeners()),
-            child: const Text('Edit', style: TextStyle(color: Color(0xFF4F8EF7), fontWeight: FontWeight.bold)),
+            child: const Text('Edit', style: TextStyle(color: Color(0xFF09637E), fontWeight: FontWeight.bold)),
           ),
           const SizedBox(width: 8),
         ],
@@ -67,7 +67,7 @@ class ProfileScreen extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           gradient: const LinearGradient(
-            colors: [Color(0xFF4F8EF7), Color(0xFF2D5BA3)],
+            colors: [Color(0xFF09637E), Color(0xFF2D5BA3)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -114,10 +114,10 @@ class ProfileScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF4F8EF7).withOpacity(0.15),
+              color: const Color(0xFF09637E).withOpacity(0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: const Color(0xFF4F8EF7), size: 16),
+            child: Icon(icon, color: const Color(0xFF09637E), size: 16),
           ),
           const SizedBox(width: 14),
           Column(
@@ -158,10 +158,10 @@ class ProfileScreen extends StatelessWidget {
               leading: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4F8EF7).withOpacity(0.15),
+                  color: const Color(0xFF09637E).withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(LucideIcons.sparkles, color: Color(0xFF4F8EF7), size: 16),
+                child: const Icon(LucideIcons.sparkles, color: Color(0xFF09637E), size: 16),
               ),
               title: const Text('Generate Card', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
               trailing: const Icon(LucideIcons.chevronRight, color: Colors.white24, size: 16),

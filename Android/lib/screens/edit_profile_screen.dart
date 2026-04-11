@@ -63,7 +63,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         actions: [
           TextButton(
             onPressed: _save,
-            child: const Text('Save', style: TextStyle(color: Color(0xFF4F8EF7), fontWeight: FontWeight.bold)),
+            child: const Text('Save', style: TextStyle(color: Color(0xFF09637E), fontWeight: FontWeight.bold)),
           ),
           const SizedBox(width: 8),
         ],
@@ -99,7 +99,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 height: 100,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const LinearGradient(colors: [Color(0xFF4F8EF7), Color(0xFF2D5BA3)]),
+                  gradient: const LinearGradient(colors: [Color(0xFF09637E), Color(0xFF2D5BA3)]),
                   image: _selectedImage != null ? DecorationImage(image: FileImage(_selectedImage!), fit: BoxFit.cover) : null,
                   boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.18), blurRadius: 16, offset: const Offset(0, 6))],
                 ),
@@ -112,14 +112,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: const BoxDecoration(color: Color(0xFF4F8EF7), shape: BoxShape.circle),
+                decoration: const BoxDecoration(color: Color(0xFF09637E), shape: BoxShape.circle),
                 child: const Icon(LucideIcons.camera, color: Colors.white, size: 14),
               ),
             ],
           ),
         ),
         const SizedBox(height: 14),
-        const Text('Change picture', style: TextStyle(color: Color(0xFF4F8EF7), fontSize: 13, fontWeight: FontWeight.w500)),
+        const Text('Change picture', style: TextStyle(color: Color(0xFF09637E), fontSize: 13, fontWeight: FontWeight.w500)),
       ],
     );
   }
@@ -149,10 +149,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF4F8EF7).withOpacity(0.15),
+              color: const Color(0xFF09637E).withOpacity(0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: const Color(0xFF4F8EF7), size: 16),
+            child: Icon(icon, color: const Color(0xFF09637E), size: 16),
           ),
           const SizedBox(width: 14),
           Expanded(
