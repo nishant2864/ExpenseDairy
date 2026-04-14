@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import '../models/finance_models.dart';
+import '../services/auth_service.dart';
+import '../services/api_service.dart';
 
 class FinanceProvider with ChangeNotifier {
   List<TransactionItem> _transactions = [];
@@ -45,15 +47,44 @@ class FinanceProvider with ChangeNotifier {
     _loadData();
   }
 
-  Future<void> _loadData() async {
-    final prefs = await SharedPreferences.getInstance();
+  bool _isLoading = false;
+  bool _isAuthenticated = false;
+  bool get isLoading => _isLoading;
+  bool get isAuthenticated => _isAuthenticated;
+  String? _currentUserId;
+
+  Future<void> refreshSession() async {
+    final token = await AuthService.getToken();
+    final userId = await AuthService.getUserId();
     
-    final transactionsJson = prefs.getString('finance.app.transactions');
-    if (transactionsJson != null) {
-      final List decoded = jsonDecode(transactionsJson);
-      _transactions = decoded.map((v) => TransactionItem.fromJson(v)).toList();
+    if (token != null && userId != null) {
+      _isAuthenticated = true;
+      _currentUserId = userId;
+      await _loadData();
+    } else {
+      _isAuthenticated = false;
+      _currentUserId = null;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _loadData() async {
+    _isLoading = true;
+    notifyListeners();
+    
+    if (_currentUserId != null) {
+      try {
+        // Sync from Cloud
+        _transactions = await ApiService.fetchTransactions(_currentUserId!);
+      } catch (e) {
+        print('Fallback to local: $e');
+        await _loadLocalTransactions();
+      }
+    } else {
+      await _loadLocalTransactions();
     }
 
+    final prefs = await SharedPreferences.getInstance();
     _hasCompletedOnboarding = prefs.getBool('finance.app.onboardingDone') ?? false;
     
     final userNameJson = prefs.getString('finance.app.userName');
@@ -84,24 +115,57 @@ class FinanceProvider with ChangeNotifier {
       _appearance = ThemeMode.values.firstWhere((e) => e.name == appearanceStr, orElse: () => ThemeMode.system);
     }
 
+    _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> _saveTransactions() async {
+  Future<void> _loadLocalTransactions() async {
+    final prefs = await SharedPreferences.getInstance();
+    final transactionsJson = prefs.getString('finance.app.transactions');
+    if (transactionsJson != null) {
+      final List decoded = jsonDecode(transactionsJson);
+      _transactions = decoded.map((v) => TransactionItem.fromJson(v)).toList();
+    }
+  }
+
+  Future<void> _saveTransactionsLocal() async {
     final prefs = await SharedPreferences.getInstance();
     final encoded = jsonEncode(_transactions.map((t) => t.toJson()).toList());
     await prefs.setString('finance.app.transactions', encoded);
   }
 
-  void addTransaction(TransactionItem item) {
-    _transactions.add(item);
-    _saveTransactions();
+  Future<void> addTransaction(TransactionItem item) async {
+    if (_currentUserId == null) return;
+    try {
+      final data = item.toJson();
+      data['userId'] = _currentUserId;
+      final saved = await ApiService.addTransaction(data);
+      _transactions.insert(0, saved);
+    } catch (e) {
+      // Fallback
+      _transactions.insert(0, item);
+      _saveTransactionsLocal();
+    }
+    notifyListeners();
+  }
+
+  Future<void> addSmartTransaction(String input) async {
+    if (_currentUserId == null) return;
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final saved = await ApiService.smartLog(_currentUserId!, input);
+      _transactions.insert(0, saved);
+    } catch (e) {
+      print('Smart Log Error: $e');
+    }
+    _isLoading = false;
     notifyListeners();
   }
 
   void deleteTransaction(String id) {
     _transactions.removeWhere((t) => t.id == id);
-    _saveTransactions();
+    _saveTransactionsLocal();
     notifyListeners();
   }
 
@@ -174,7 +238,8 @@ class FinanceProvider with ChangeNotifier {
   }
 
   String formatCurrency(double amount) {
-    return NumberFormat.simpleCurrency(decimalDigits: 0).format(amount);
+    final currencyFormat = NumberFormat.simpleCurrency(locale: 'en_IN', decimalDigits: 0);
+    return currencyFormat.format(amount);
   }
 
   List<TransactionItem> get currentMonthTransactions {

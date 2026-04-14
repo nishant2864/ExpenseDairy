@@ -232,7 +232,7 @@ class _ATMCardViewState extends State<ATMCardView> with SingleTickerProviderStat
                   ),
                 ],
               ),
-              const Icon(LucideIcons.wifi, size: 20, color: Colors.white54),
+              const Icon(LucideIcons.nfc, size: 20, color: Colors.white54),
             ],
           ),
         ],
@@ -255,11 +255,11 @@ class _ATMCardViewState extends State<ATMCardView> with SingleTickerProviderStat
       child: Stack(
         children: [
           Positioned(
-            top: 20,
+            top: 15,
             left: 0,
             right: 0,
             child: Container(
-              height: 38,
+              height: 30,
               color: Colors.black.withOpacity(0.85),
             ),
           ),
@@ -268,7 +268,7 @@ class _ATMCardViewState extends State<ATMCardView> with SingleTickerProviderStat
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Spacer(flex: 2),
+                const Spacer(flex: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -326,7 +326,7 @@ class _ATMCardViewState extends State<ATMCardView> with SingleTickerProviderStat
                         fontFamily: 'monospace',
                       ),
                     ),
-                    const Icon(LucideIcons.wifi, size: 14, color: Colors.white24),
+                    const Icon(LucideIcons.nfc, size: 14, color: Colors.white24),
                   ],
                 ),
               ],

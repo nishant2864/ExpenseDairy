@@ -4,6 +4,7 @@ import 'providers/finance_provider.dart';
 import 'screens/launch_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/main_container.dart';
+import 'screens/login_screen.dart';
 import 'widgets/ui_elements.dart';
 
 void main() {
@@ -101,9 +102,11 @@ class _ExpenseTrackerAppState extends State<ExpenseTrackerApp> {
               labelSmall: TextStyle(color: Colors.black),
             ),
           ),
-          home: provider.hasCompletedOnboarding 
+          home: provider.isAuthenticated 
               ? const MainContainer() 
-              : const OnboardingScreen(),
+              : provider.hasCompletedOnboarding 
+                  ? LoginScreen() 
+                  : const OnboardingScreen(),
         );
       },
     );

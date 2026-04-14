@@ -10,7 +10,7 @@ class TransactionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat = NumberFormat.simpleCurrency(decimalDigits: 0);
+    final currencyFormat = NumberFormat.simpleCurrency(locale: 'en_IN', decimalDigits: 0);
     final isExpense = item.kind == TransactionKind.expense;
     final colorScheme = Theme.of(context).colorScheme;
 

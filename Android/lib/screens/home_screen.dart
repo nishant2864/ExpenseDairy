@@ -48,38 +48,49 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: ListView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+      body: Stack(
         children: [
-          _buildHeader(context, provider),
-          const SizedBox(height: 24),
-          ATMCardView(snapshot: snapshot),
-          const SizedBox(height: 28),
-          if (hasTransactions) ...[
-            QuickStatsRow(snapshot: snapshot),
-            const SizedBox(height: 32),
-            SpendingChartCard(
-              items: provider.monthlyTotalsByCategory(TransactionKind.expense),
+          ListView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+            children: [
+              _buildHeader(context, provider),
+              const SizedBox(height: 24),
+              ATMCardView(snapshot: snapshot),
+              const SizedBox(height: 28),
+              if (hasTransactions) ...[
+                QuickStatsRow(snapshot: snapshot),
+                const SizedBox(height: 32),
+                SpendingChartCard(
+                  items: provider.monthlyTotalsByCategory(TransactionKind.expense),
+                ),
+                const SizedBox(height: 12),
+                _buildSectionHeader(
+                  context,
+                  'Recent activity',
+                  onSeeAll: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TransactionsScreen()),
+                  ),
+                ),
+                if (recent.isEmpty)
+                  const _EmptyActivityList()
+                else
+                  ...recent.take(3).map((item) => TransactionRow(item: item)),
+              ] else
+                _FirstRunCard(onAdd: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AddTransactionScreen(kind: 'expense')),
+                )),
+            ],
+          ),
+          if (provider.isLoading)
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: LinearProgressIndicator(minHeight: 2),
             ),
-            const SizedBox(height: 12),
-            _buildSectionHeader(
-              context,
-              'Recent activity',
-              onSeeAll: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const TransactionsScreen()),
-              ),
-            ),
-            if (recent.isEmpty)
-              const _EmptyActivityList()
-            else
-              ...recent.take(3).map((item) => TransactionRow(item: item)),
-          ] else
-            _FirstRunCard(onAdd: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const AddTransactionScreen(kind: 'expense')),
-            )),
         ],
       ),
     );
@@ -126,8 +137,8 @@ class HomeScreen extends StatelessWidget {
           ),
           TextButton.icon(
             onPressed: onSeeAll,
-            icon: const Icon(LucideIcons.chevronRight, size: 14),
             label: const Text('See all', style: TextStyle(fontSize: 13)),
+            icon: const Icon(LucideIcons.chevronRight, size: 14),
           ),
         ],
       ),
