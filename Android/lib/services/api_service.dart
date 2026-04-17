@@ -4,7 +4,7 @@ import '../models/finance_models.dart';
 
 class ApiService {
   // Use 10.0.2.2 for Android Emulator, 127.0.0.1 for iOS Simulator
-  static const String baseUrl = 'http://10.35.90.51:5005/api';
+  static const String baseUrl = 'https://expense-dairy.vercel.app/api';
 
   static Future<List<TransactionItem>> fetchTransactions(String userId) async {
     final response = await http.get(Uri.parse('$baseUrl/transactions/$userId'));
